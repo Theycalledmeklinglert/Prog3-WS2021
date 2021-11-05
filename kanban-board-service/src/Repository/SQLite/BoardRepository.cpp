@@ -102,7 +102,7 @@ std::optional<Prog3::Core::Model::Column> BoardRepository::putColumn(int id, std
 }
 
 void BoardRepository::deleteColumn(int id) {
-    string deleteRequest = "DELETE FROM column c WHERE c.id = " + id;
+    string deleteRequest = "DELETE FROM column WHERE id = " + to_string(id);
     char *errorMessage = nullptr;
     int result = sqlite3_exec(database, deleteRequest.c_str(), NULL, 0, &errorMessage);
     handleSQLError(result, errorMessage);
@@ -145,7 +145,7 @@ std::optional<Prog3::Core::Model::Item> BoardRepository::putItem(int columnId, i
 }
 
 void BoardRepository::deleteItem(int columnId, int itemId) {
-    string deleteRequest = "DELETE FROM item i WHERE i.id = " + to_string(itemId) + " AND i.column_id = " + to_string(columnId);
+    string deleteRequest = "DELETE FROM item WHERE id = " + to_string(itemId) + " AND column_id = " + to_string(columnId);
     char *errorMessage = nullptr;
     int result = sqlite3_exec(database, deleteRequest.c_str(), NULL, 0, &errorMessage);
     handleSQLError(result, errorMessage);
