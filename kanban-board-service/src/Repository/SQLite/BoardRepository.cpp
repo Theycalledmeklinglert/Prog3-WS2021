@@ -105,34 +105,19 @@ std::optional<Prog3::Core::Model::Column> BoardRepository::putColumn(int id, std
     char *errorMessage = nullptr;
 
     //Checks if column exists
-    void *cPointer = static_cast<void *>(new std::string(""));
-    result = sqlite3_exec(database, sqlSelectColumns.c_str(), BoardRepository::queryCallback, cPointer, &errorMessage);
-    handleSQLError(result, errorMessage);
-    string *cStringPointer = static_cast<std::string *>(cPointer);
-    string columnString = *cStringPointer;
-    if (columnString == "")
+    void *cPointer = nullptr;  
+    result = sqlite3_exec(database, sqlSelectColumns.c_str(), BoardRepository::queryCallbackColumn, cPointer, &errorMessage);
+    handleSQLError(result, errorMessage); 
+    if ((*cPointer).getId() == NULL) 
         return std::nullopt;
 
     //Get all items from column that is to be updated (Needs to be returned for method to pass test)
-    void *iPointer = static_cast<void *>(new std::string(""));
-    result = sqlite3_exec(database, sqlSelectItems.c_str(), BoardRepository::queryCallback, iPointer, &errorMessage);
+    void *iPointer = nullptr;
+    result = sqlite3_exec(database, sqlSelectItems.c_str(), BoardRepository::queryCallbackItems, iPointer, &errorMessage);
     handleSQLError(result, errorMessage);
-    string *tempPointer = static_cast<std::string *>(iPointer);
-    string items = *tempPointer;
-    std::vector itemVec = split(items, ';'); //???????????
-    vector<Item> realItems = {};
-    for (auto partItem : itemVec) { //koennte auch string statt auto sein
-        std::vector<string> valueList = split(partItem, ',');
-        string stringItemID = split(valueList[0], ':')[1];
-        int itemID = std::stoi(stringItemID);
-        string itemTitle = split(valueList[1], ':')[1];
-        string itemDate = split(valueList[2], ':')[1];
-        string stringItemPos = split(valueList[3], ':')[1];
-        int itemPos = std::stoi(stringItemPos);
-        Item item(itemID, itemTitle, itemDate, itemPos);
-        realItems.push_back(item);
-    }
+    std::vector<Item> itemVec = static_cast<std::vector<Item>>(*iPointer); 
 
+    
     //Update des Columns
     char *pointer = nullptr;
     result = sqlite3_exec(database, sqlUpdateColumnRequest.c_str(), NULL, 0, &errorMessage);
@@ -143,8 +128,8 @@ std::optional<Prog3::Core::Model::Column> BoardRepository::putColumn(int id, std
     }
     cout << "Column with " + to_string(id) + " updated successfully" << endl;
     Column out(id, name, position);
-    for (auto item : realItems) {
-        out.addItem(item);
+    for(Item item : itemVec) {
+      out.addItem(item); 
     }
     return out;
 }
@@ -189,12 +174,12 @@ std::optional<Item> BoardRepository::postItem(int columnId, std::string title, i
 }
 
 std::optional<Prog3::Core::Model::Item> BoardRepository::putItem(int columnId, int itemId, std::string title, int position) {
-    string sqlUpdateItemRequest = "UPDATE item SET title = " + to_string(title) + ", position = " + to_string(position) + " WHERE column_id = " + to_string(columnId) + " AND id = " + to_string(itemId);
+    string sqlUpdateItemRequest = "UPDATE item SET title = " + title + ", position = " + to_string(position) + " WHERE column_id = " + to_string(columnId) + " AND id = " + to_string(itemId);
     int result = 0;
     char *errorMessage = nullptr;
 
     result = sqlite3_exec(database, sqlUpdateItemRequest.c_str(), NULL, 0, &errorMessage);
-    handeleSQLError(result, errorMessage);
+    handleSQLError(result, errorMessage);
 }
 
 void BoardRepository::deleteItem(int columnId, int itemId) {
@@ -245,12 +230,19 @@ void BoardRepository::createDummyData() {
   sqlite3_exec takes a "Callback function" as one of its arguments, and since there are many crazy approaches in the wild internet,
   I want to show you how the signature of this "callback function" may look like in order to work with sqlite3_exec()
 */
-int BoardRepository::queryCallback(void *data, int numberOfColumns, char **fieldValues, char **columnNames) { // Was steht im data Pointer und warum der Cast hier?
-    void *sPointer = static_cast<string *>(data);
-    for (int i = 0; i < numberOfColumns; i++) {
-        sPointer += columnNames[i] + ":" fieldValues[i];
-        if (i < numberOfColumns - 1)
-            sPointer += ",";
-    }
+int BoardRepository::queryCallbackColumn(void *data, int numberOfColumns, char **fieldValues, char **columnNames) {
+    Column *sPointer = static_cast<Column *>(data);
+    sPointer->setID(stoi(fieldValues[0]));
+    sPointer->setName(fieldValues[1]); 
+    sPointer->setPos(stoi(fieldValues[2])); 
+    return 0;
+}
+
+int BoardRepository::queryCallbackItems(void *data, int numberOfColumns, char **fieldValues, char **columnNames) {
+    std:vector<Item> *itemList = static_cast<std::vector<Item> *>(data);  
+    for(int i = 0;i<numberOfColumns;i++) {
+      Item temp(stoi(fieldValues[0]), fieldValues[1], stoi(fieldValues[2]), fieldValues[3]); 
+      (*itemList).push_back(temp); 
+    } 
     return 0;
 }
