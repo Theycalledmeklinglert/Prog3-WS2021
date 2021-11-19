@@ -20,6 +20,8 @@ class RepositoryIf {
     virtual std::optional<Prog3::Core::Model::Item> postItem(int columnId, std::string title, int position) = 0;
     virtual std::optional<Prog3::Core::Model::Item> putItem(int columnId, int itemId, std::string title, int position) = 0;
     virtual void deleteItem(int columnId, int itemId) = 0;
+    int queryCallbackColumn(void *data, int numberOfColumns, char **fieldValues, char **columnNames);
+    int queryCallbackItems(void *data, int numberOfColumns, char **fieldValues, char **columnNames);
 };
 
 } // namespace Repository

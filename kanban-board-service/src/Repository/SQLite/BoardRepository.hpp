@@ -36,8 +36,10 @@ class BoardRepository : public RepositoryIf {
     virtual std::optional<Prog3::Core::Model::Item> postItem(int columnId, std::string title, int position);
     virtual std::optional<Prog3::Core::Model::Item> putItem(int columnId, int itemId, std::string title, int position);
     virtual void deleteItem(int columnId, int itemId);
-    int queryCallbackColumn(void *data, int numberOfColumns, char **fieldValues, char **columnNames);
-    int queryCallbackItems(void *data, int numberOfColumns, char **fieldValues, char **columnNames); 
+    static int queryCallbackColumn(void *data, int numberOfColumns, char **fieldValues, char **columnNames); // statt static geht auch Free Function; Dann aber auch Aufruf ohne BoardRepository::
+    static int queryCallbackItems(void *data, int numberOfColumns, char **fieldValues, char **columnNames);
+    static int queryCallbackAllColumns(void *data, int numberOfColumns, char **fieldValues, char **columnNames);
+    static int queryCallbackSingleItem(void *data, int numberOfColumns, char **fieldValues, char **columnNames);
 
     static inline std::string const boardTitle = "Kanban Board";
     static inline int const INVALID_ID = -1;
