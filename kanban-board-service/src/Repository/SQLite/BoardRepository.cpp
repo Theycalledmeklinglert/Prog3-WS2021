@@ -173,7 +173,15 @@ std::vector<Item> BoardRepository::getItems(int columnId) {
 }
 
 std::optional<Item> BoardRepository::getItem(int columnId, int itemId) {
-    throw NotImplementedException();
+    std::string sqlGetItem = "SELECT * FROM item WHERE column_id = " + to_string(columnId) + " AND id = " + to_string(itemId);
+    char *errorMessage;
+    int result = 0;
+    Item test(-1, "", -1, "");
+    result = sqlite3_exec(database, sqlGetItem.c_str(), queryCallbackSingleItem, &test, &errorMessage);
+    if (SQLITE_OK == result && test.getId() != -1) {
+        return test;
+    }
+    return std::nullopt;
 }
 
 std::optional<Item> BoardRepository::postItem(int columnId, std::string title, int position) {
