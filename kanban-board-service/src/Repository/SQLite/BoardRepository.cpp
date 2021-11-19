@@ -149,7 +149,12 @@ std::optional<Prog3::Core::Model::Column> BoardRepository::putColumn(int id, std
     for (Item item : itemVec) {
         out.addItem(item);
     }
-    return out;
+    Column out2(out.getId(), out.getName(), out.getPos());
+    for (Item item : itemVec) {
+        out2.addItem(item);
+    }
+    return out2;
+    // return out;
 }
 
 void BoardRepository::deleteColumn(int id) {
