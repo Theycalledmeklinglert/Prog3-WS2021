@@ -81,11 +81,20 @@ std::vector<Column> BoardRepository::getColumns() { // erst naeste Woche
 
 std::optional<Column> BoardRepository::getColumn(int id) {
     string sqlGetCol = "SELECT * FROM column WHERE id = " + to_string(id);
+    string sqlGetColItems = "SELECT * FROM item WHERE column_id = " + to_string(id);
     int result = 0;
     char *errorMessage = nullptr;
     Column test(-1, "", -1);
     result = sqlite3_exec(database, sqlGetCol.c_str(), queryCallbackColumn, &test, &errorMessage);
-    if (SQLITE_OK == result && (test.getId() != -1)) {
+    if (SQLITE_OK != result || (test.getId() != -1)) {
+        return std::nullopt;
+    }
+    vector<Item> itemVec;
+    result = sqlite3_exec(database, sqlGetColItems.c_str(), queryCallbackItems, &itemVec, &errorMessage);
+    if (SQLITE_OK == result) {
+        for (Item i : itemVec) {
+            test.addItem(i);
+        }
         return test;
     }
     return std::nullopt;
@@ -120,10 +129,8 @@ std::optional<Prog3::Core::Model::Column> BoardRepository::putColumn(int id, std
 
     //Checks if column exists
     Column dummy(-1, "Dummy", -1);
-    void *vp = static_cast<void *>(&dummy);
-    result = sqlite3_exec(database, sqlSelectColumns.c_str(), queryCallbackColumn, vp, &errorMessage);
-    Column *dP = static_cast<Column *>(vp);
-    if (dP->getId() == -1)
+    result = sqlite3_exec(database, sqlSelectColumns.c_str(), queryCallbackColumn, &dummy, &errorMessage);
+    if (dummy.getId() == -1)
         return std::nullopt;
 
     //Update des Columns
