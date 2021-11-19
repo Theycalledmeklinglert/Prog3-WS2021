@@ -70,12 +70,13 @@ Board BoardRepository::getBoard() {
 }
 
 std::vector<Column> BoardRepository::getColumns() { // erst naeste Woche
-    string sqlGetAllCol = "SELECT * FROM column ORDER BY id ASC";
+                                                    /* string sqlGetAllCol = "SELECT * FROM column ORDER BY id ASC";
     int result = 0;
     char *errorMessage = nullptr;
     vector<Column> colVec;
     void *colVecP = static_cast<void *>(&colVec);
-    result = sqlite3_exec(database, sqlGetAllCol.c_str(), BoardRepository::queryCallbackAllColumns, colVecP, &errorMessage);
+    result = sqlite3_exec(database, sqlGetAllCol.c_str(), BoardRepository::queryCallbackAllColumns, colVecP, &errorMessage); */
+    throw NotImplementedException();
 }
 
 std::optional<Column> BoardRepository::getColumn(int id) {
@@ -83,11 +84,8 @@ std::optional<Column> BoardRepository::getColumn(int id) {
     int result = 0;
     char *errorMessage = nullptr;
     Column test(-1, "", -1);
-    void *cP = static_cast<void *>(&test);
-    result = sqlite3_exec(database, sqlGetCol.c_str(), queryCallbackColumn, cP, &errorMessage);
-    Column *cPP = static_cast<Column *>(cP);
-    if (SQLITE_OK == result && (cPP->getId() != -1)) {
-        test = (*cPP);
+    result = sqlite3_exec(database, sqlGetCol.c_str(), queryCallbackColumn, &test, &errorMessage);
+    if (SQLITE_OK == result && (test.getId() != -1)) {
         return test;
     }
     return std::nullopt;
@@ -162,16 +160,16 @@ void BoardRepository::deleteColumn(int id) {
 }
 
 std::vector<Item> BoardRepository::getItems(int columnId) {
-    std::string sqlGetColumn = "SELECT * FROM item WHERER column_id = " + to_string(columnId);
+    std::string sqlGetColumn = "SELECT * FROM item WHERE column_id = " + to_string(columnId);
     int result = 0;
     char *errorMessage = nullptr;
-    Item item(-1, "", -1, "");
-    result = sqlite3_exec(database, sqlGetColumn.c_str(), queryCallbackItems, &item, &errorMessage);
-    item = static_cast<Item>(item);
-    if (SQLITE_OK == result && item.getId() != -1) {
-        // return item;
+    vector<Item> itemVec;
+    result = sqlite3_exec(database, sqlGetColumn.c_str(), queryCallbackItems, &itemVec, &errorMessage);
+    if (SQLITE_OK == result) {
+        return itemVec;
     }
-    // return std::nullopt;
+    vector<Item> failVec;
+    return failVec;
 }
 
 std::optional<Item> BoardRepository::getItem(int columnId, int itemId) {
