@@ -127,11 +127,14 @@ std::optional<Prog3::Core::Model::Column> BoardRepository::putColumn(int id, std
     int result = 0;
     char *errorMessage = nullptr;
 
-    //Checks if column exists
-    Column dummy(-1, "Dummy", -1);
-    result = sqlite3_exec(database, sqlSelectColumns.c_str(), queryCallbackColumn, &dummy, &errorMessage);
-    if (dummy.getId() == -1)
+    //Update des Columns
+    result = sqlite3_exec(database, sqlUpdateColumnRequest.c_str(), NULL, 0, &errorMessage);
+    handleSQLError(result, errorMessage);
+    if (SQLITE_OK != result) {
+        cout << "Could not edit Column with ID: " + to_string(id) << endl;
         return std::nullopt;
+    }
+    cout << "Column with " + to_string(id) + " updated successfully" << endl;
 
     //Get updated Column
     Column out(-1, "", -1);
@@ -146,16 +149,6 @@ std::optional<Prog3::Core::Model::Column> BoardRepository::putColumn(int id, std
     for (Item item : itemVec) {
         out.addItem(item);
     }
-
-    //Update des Columns
-    result = sqlite3_exec(database, sqlUpdateColumnRequest.c_str(), NULL, 0, &errorMessage);
-    handleSQLError(result, errorMessage);
-    if (SQLITE_OK != result) {
-        cout << "Could not edit Column with ID: " + to_string(id) << endl;
-        return std::nullopt;
-    }
-    cout << "Column with " + to_string(id) + " updated successfully" << endl;
-
     return out;
 }
 
