@@ -138,8 +138,7 @@ std::optional<Prog3::Core::Model::Column> BoardRepository::putColumn(int id, std
     //Get updated Column
     Column out(-1, "", -1);
     result = sqlite3_exec(database, sqlSelectColumns.c_str(), queryCallbackColumn, &out, &errorMessage);
-    Column *cP = static_cast<Column *>(vp);
-    if (cP->getId() == -1)
+    if (out.getId() == -1)
         return std::nullopt;
 
     //Get all items from column that was updated (Needs to be returned for method to pass test)
@@ -221,12 +220,17 @@ std::optional<Prog3::Core::Model::Item> BoardRepository::putItem(int columnId, i
         return std::nullopt;
     }
     // Update Item
-    Item item(-1, "", -1, "");
-    result = sqlite3_exec(database, sqlUpdateItemRequest.c_str(), queryCallbackItems, &item, &errorMessage);
+    result = sqlite3_exec(database, sqlUpdateItemRequest.c_str(), NULL, 0, &errorMessage);
     handleSQLError(result, errorMessage);
-    item = static_cast<Item>(item);
-    if (SQLITE_OK == result && item.getId() != -1) {
-        return item;
+    if (SQLITE_OK != result) {
+        return std::nullopt;
+    }
+
+    // Get updated Item
+    Item out(-1, "", -1, "");
+    result = sqlite3_exec(database, sqlGetItem.c_str(), queryCallbackSingleItem, &out, &errorMessage);
+    if (SQLITE_OK == result && out.getId() != -1) {
+        return out;
     }
     return std::nullopt;
 }
