@@ -121,16 +121,15 @@ std::optional<Column> BoardRepository::postColumn(std::string name, int position
 }
 
 std::optional<Prog3::Core::Model::Column> BoardRepository::putColumn(int id, std::string name, int position) {
-    string sqlSelectColumns = "SELECT * FROM column WHERE id = " + to_string(id);
-    string sqlUpdateColumnRequest = "UPDATE column SET name = " + name + ", position = " + to_string(position) + " WHERE id = " + to_string(id);
-    string sqlSelectItems = "SELECT * FROM item WHERE column_id = " + to_string(id);
+    string sqlUpdateColumnRequest = "UPDATE column SET name = '" + name + "', position = '" + to_string(position) + "' WHERE id = '" + to_string(id) + "'";
+    string sqlSelectItems = "SELECT * FROM item WHERE column_id = '" + to_string(id) + "'";
     int result = 0;
     char *errorMessage = nullptr;
 
     //Update des Columns
     result = sqlite3_exec(database, sqlUpdateColumnRequest.c_str(), NULL, 0, &errorMessage);
     handleSQLError(result, errorMessage);
-    if (SQLITE_OK == result) {
+    if (SQLITE_OK == result) { // Result ebenfalls gueltig wenn Column nicht in DB vorhanden ist.
         if (sqlite3_changes(database) == 1) {
             cout << "Column with " + to_string(id) + " updated successfully" << endl;
             vector<Item> itemVec;
