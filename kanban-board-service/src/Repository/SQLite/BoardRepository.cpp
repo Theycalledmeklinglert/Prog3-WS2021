@@ -216,7 +216,7 @@ std::optional<Prog3::Core::Model::Item> BoardRepository::putItem(int columnId, i
             handleSQLError(result, errorMessage);
             if (SQLITE_OK == result) {
                 // Get updated Item
-                Item out(-1, "", -1, "");
+                Item out(INT_MAX, "", INT_MAX, "");
                 result = sqlite3_exec(database, sqlGetItem.c_str(), queryCallbackSingleItem, &out, &errorMessage);
                 if (SQLITE_OK == result) {
                     return out;
