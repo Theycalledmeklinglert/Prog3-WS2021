@@ -136,20 +136,20 @@ std::optional<Prog3::Core::Model::Column> BoardRepository::putColumn(int id, std
     }
     cout << "Column with " + to_string(id) + " updated successfully" << endl;
 
-    //Get updated Column
+    /* //Get updated Column
     Column out(-1, "", -1);
     result = sqlite3_exec(database, sqlSelectColumns.c_str(), queryCallbackColumn, &out, &errorMessage);
     if (out.getId() == -1)
-        return std::nullopt;
+        return std::nullopt; */
 
     //Get all items from column that was updated (Needs to be returned for method to pass test)
     vector<Item> itemVec;
     result = sqlite3_exec(database, sqlSelectItems.c_str(), queryCallbackItems, &itemVec, &errorMessage);
     handleSQLError(result, errorMessage);
-    for (Item item : itemVec) {
+    /* for (Item item : itemVec) {
         out.addItem(item);
-    }
-    Column out2(out.getId(), out.getName(), out.getPos());
+    } */
+    Column out2(id, name, position);
     for (Item item : itemVec) {
         out2.addItem(item);
     }
