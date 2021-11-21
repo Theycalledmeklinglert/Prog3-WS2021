@@ -86,16 +86,15 @@ std::optional<Column> BoardRepository::getColumn(int id) {
     char *errorMessage = nullptr;
     Column test(-1, "", -1);
     result = sqlite3_exec(database, sqlGetCol.c_str(), queryCallbackColumn, &test, &errorMessage);
-    if (SQLITE_OK != result || (test.getId() != -1)) {
-        return std::nullopt;
-    }
-    vector<Item> itemVec;
-    result = sqlite3_exec(database, sqlGetColItems.c_str(), queryCallbackItems, &itemVec, &errorMessage);
-    if (SQLITE_OK == result) {
-        for (Item i : itemVec) {
-            test.addItem(i);
+    if (SQLITE_OK == result && (test.getId() != -1)) {
+        vector<Item> itemVec;
+        result = sqlite3_exec(database, sqlGetColItems.c_str(), queryCallbackItems, &itemVec, &errorMessage);
+        if (SQLITE_OK == result) {
+            for (Item i : itemVec) {
+                test.addItem(i);
+            }
+            return test;
         }
-        return test;
     }
     return std::nullopt;
 }
