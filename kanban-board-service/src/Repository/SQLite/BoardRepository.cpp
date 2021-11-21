@@ -291,10 +291,8 @@ int BoardRepository::queryCallbackItems(void *data, int numberOfColumns, char **
 }
 int BoardRepository::queryCallbackSingleItem(void *data, int numberOfColumns, char **fieldValues, char **columnNames) {
     Item *itemP = static_cast<Item *>(data);
-    (*itemP).setID(stoi(fieldValues[0]));
-    (*itemP).setTitle(fieldValues[1]);
-    (*itemP).setPos(stoi(fieldValues[2]));
-    (*itemP).setTimestamp("1");
+    Item item(stoi(fieldValues[0]), fieldValues[1], stoi(fieldValues[2]), "1");
+    *itemP = item;
     return 0;
 }
 int BoardRepository::queryCallbackAllColumns(void *data, int numberOfColumns, char **fieldValues, char **columnNames) {
