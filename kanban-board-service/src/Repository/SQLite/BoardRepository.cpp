@@ -208,19 +208,15 @@ std::optional<Prog3::Core::Model::Item> BoardRepository::putItem(int columnId, i
     char *errorMessage = nullptr;
 
     // Check if Item in DB
-    Item test(-1, "", -1, "");
-    result = sqlite3_exec(database, sqlGetItem.c_str(), queryCallbackSingleItem, &test, &errorMessage);
-    if (SQLITE_OK == result) {
-        if (sqlite3_changes(database) == 1) {
-            result = sqlite3_exec(database, sqlUpdateItemRequest.c_str(), NULL, 0, &errorMessage);
-            handleSQLError(result, errorMessage);
+    result = sqlite3_exec(database, sqlUpdateItemRequest.c_str(), NULL, 0, &errorMessage);
+    handleSQLError(result, errorMessage);
+    if (sqlite3_changes(database) == 1) {
+        if (SQLITE_OK == result) {
+            // Get updated Item
+            Item out(-1, "", -1, "");
+            result = sqlite3_exec(database, sqlGetItem.c_str(), queryCallbackSingleItem, &out, &errorMessage);
             if (SQLITE_OK == result) {
-                // Get updated Item
-                Item out(-1, "", -1, "");
-                result = sqlite3_exec(database, sqlGetItem.c_str(), queryCallbackSingleItem, &out, &errorMessage);
-                if (SQLITE_OK == result) {
-                    return out;
-                }
+                return out;
             }
         }
     }
