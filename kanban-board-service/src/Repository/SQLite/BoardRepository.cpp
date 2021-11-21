@@ -211,7 +211,7 @@ std::optional<Prog3::Core::Model::Item> BoardRepository::putItem(int columnId, i
     Item test(-1, "", -1, "");
     result = sqlite3_exec(database, sqlGetItem.c_str(), queryCallbackSingleItem, &test, &errorMessage);
     if (SQLITE_OK == result) {
-        if (test.getId() != -1) {
+        if (sqlite3_changes(database) == 1) {
             result = sqlite3_exec(database, sqlUpdateItemRequest.c_str(), NULL, 0, &errorMessage);
             handleSQLError(result, errorMessage);
             if (SQLITE_OK == result) {
