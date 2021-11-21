@@ -80,8 +80,8 @@ std::vector<Column> BoardRepository::getColumns() { // erst naeste Woche
 }
 
 std::optional<Column> BoardRepository::getColumn(int id) {
-    string sqlGetCol = "SELECT * FROM column WHERE id = " + to_string(id);
-    string sqlGetColItems = "SELECT * FROM item WHERE column_id = " + to_string(id);
+    string sqlGetCol = "SELECT * FROM column WHERE id = '" + to_string(id) + "'";
+    string sqlGetColItems = "SELECT * FROM item WHERE column_id = '" + to_string(id) + "'";
     int result = 0;
     char *errorMessage = nullptr;
     Column test(-1, "", -1);
@@ -125,8 +125,7 @@ std::optional<Prog3::Core::Model::Column> BoardRepository::putColumn(int id, std
     string sqlSelectItems = "SELECT * FROM item WHERE column_id = '" + to_string(id) + "'";
     int result = 0;
     char *errorMessage = nullptr;
-    int result2 = 0;
-    char *errorMessage2 = nullptr;
+
     //Update des Columns
     result = sqlite3_exec(database, sqlUpdateColumnRequest.c_str(), NULL, 0, &errorMessage);
     handleSQLError(result, errorMessage);
@@ -134,8 +133,8 @@ std::optional<Prog3::Core::Model::Column> BoardRepository::putColumn(int id, std
         if (sqlite3_changes(database) == 1) {
             cout << "Column with " + to_string(id) + " updated successfully" << endl;
             vector<Item> itemVec;
-            result2 = sqlite3_exec(database, sqlSelectItems.c_str(), queryCallbackItems, &itemVec, &errorMessage2);
-            handleSQLError(result2, errorMessage2);
+            result = sqlite3_exec(database, sqlSelectItems.c_str(), queryCallbackItems, &itemVec, &errorMessage);
+            handleSQLError(result, errorMessage);
             Column out2(id, name, position);
             for (Item item : itemVec) {
                 out2.addItem(item);
