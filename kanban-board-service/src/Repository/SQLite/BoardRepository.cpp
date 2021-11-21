@@ -210,20 +210,23 @@ std::optional<Prog3::Core::Model::Item> BoardRepository::putItem(int columnId, i
     // Check if Item in DB
     Item test(-1, "", -1, "");
     result = sqlite3_exec(database, sqlGetItem.c_str(), queryCallbackSingleItem, &test, &errorMessage);
-    if (SQLITE_OK != result || test.getId() == -1) {
-        return std::nullopt;
-    }
-    // Update Item
-    result = sqlite3_exec(database, sqlUpdateItemRequest.c_str(), NULL, 0, &errorMessage);
-    handleSQLError(result, errorMessage);
     if (SQLITE_OK == result) {
-        // Get updated Item
-        Item out(-1, "", -1, "");
-        result = sqlite3_exec(database, sqlGetItem.c_str(), queryCallbackSingleItem, &out, &errorMessage);
-        if (SQLITE_OK == result && out.getId() != -1) {
-            return out;
+        if (test.getId() != -1) {
+            result = sqlite3_exec(database, sqlUpdateItemRequest.c_str(), NULL, 0, &errorMessage);
+            handleSQLError(result, errorMessage);
+            if (SQLITE_OK == result) {
+                // Get updated Item
+                Item out(-1, "", -1, "");
+                result = sqlite3_exec(database, sqlGetItem.c_str(), queryCallbackSingleItem, &out, &errorMessage);
+                if (SQLITE_OK == result) {
+                    return out;
+                }
+            }
         }
     }
+    return std::nullopt;
+    // Update Item
+
     return std::nullopt;
 }
 
