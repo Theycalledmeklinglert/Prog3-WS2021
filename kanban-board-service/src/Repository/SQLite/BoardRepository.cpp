@@ -225,9 +225,6 @@ std::optional<Prog3::Core::Model::Item> BoardRepository::putItem(int columnId, i
         }
     }
     return std::nullopt;
-    // Update Item
-
-    return std::nullopt;
 }
 
 void BoardRepository::deleteItem(int columnId, int itemId) {
