@@ -216,7 +216,7 @@ std::optional<Prog3::Core::Model::Item> BoardRepository::putItem(int columnId, i
             handleSQLError(result, errorMessage);
             if (SQLITE_OK == result) {
                 // Get updated Item
-                Item out(0, "", 0, "");
+                Item out(-1, "", -1, "");
                 result = sqlite3_exec(database, sqlGetItem.c_str(), queryCallbackSingleItem, &out, &errorMessage);
                 if (SQLITE_OK == result) {
                     return out;
@@ -294,7 +294,7 @@ int BoardRepository::queryCallbackSingleItem(void *data, int numberOfColumns, ch
     (*itemP).setID(stoi(fieldValues[0]));
     (*itemP).setTitle(fieldValues[1]);
     (*itemP).setPos(stoi(fieldValues[2]));
-    (*itemP).setTimestamp(fieldValues[3]);
+    (*itemP).setTimestamp("1");
     return 0;
 }
 int BoardRepository::queryCallbackAllColumns(void *data, int numberOfColumns, char **fieldValues, char **columnNames) {
