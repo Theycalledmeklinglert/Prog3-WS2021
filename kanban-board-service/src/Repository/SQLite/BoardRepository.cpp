@@ -210,21 +210,19 @@ std::optional<Prog3::Core::Model::Item> BoardRepository::putItem(int columnId, i
     // Check if Item in DB
     Item test(-1, "", -1, "");
     result = sqlite3_exec(database, sqlGetItem.c_str(), queryCallbackSingleItem, &test, &errorMessage);
-    if (SQLITE_OK != result && test.getId() == -1) {
+    if (SQLITE_OK != result || test.getId() == -1) {
         return std::nullopt;
     }
     // Update Item
     result = sqlite3_exec(database, sqlUpdateItemRequest.c_str(), NULL, 0, &errorMessage);
     handleSQLError(result, errorMessage);
-    if (SQLITE_OK != result) {
-        return std::nullopt;
-    }
-
-    // Get updated Item
-    Item out(-1, "", -1, "");
-    result = sqlite3_exec(database, sqlGetItem.c_str(), queryCallbackSingleItem, &out, &errorMessage);
-    if (SQLITE_OK == result && out.getId() != -1) {
-        return out;
+    if (SQLITE_OK == result) {
+        // Get updated Item
+        Item out(-1, "", -1, "");
+        result = sqlite3_exec(database, sqlGetItem.c_str(), queryCallbackSingleItem, &out, &errorMessage);
+        if (SQLITE_OK == result && out.getId() != -1) {
+            return out;
+        }
     }
     return std::nullopt;
 }
@@ -301,9 +299,7 @@ int BoardRepository::queryCallbackSingleItem(void *data, int numberOfColumns, ch
 }
 int BoardRepository::queryCallbackAllColumns(void *data, int numberOfColumns, char **fieldValues, char **columnNames) {
     vector<Column> *colVecP = static_cast<vector<Column> *>(data);
-    for (int i = 0; i < numberOfColumns; i++) {
-        Column temp(stoi(fieldValues[0]), fieldValues[1], stoi(fieldValues[2]));
-        (*colVecP).push_back(temp);
-    }
+    Column temp(stoi(fieldValues[0]), fieldValues[1], stoi(fieldValues[2]));
+    (*colVecP).push_back(temp);
     return 0;
 }
