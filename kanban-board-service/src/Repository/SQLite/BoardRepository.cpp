@@ -286,7 +286,7 @@ int BoardRepository::queryCallbackItems(void *data, int numberOfColumns, char **
 }
 int BoardRepository::queryCallbackSingleItem(void *data, int numberOfColumns, char **fieldValues, char **columnNames) {
     Item *itemP = static_cast<Item *>(data);
-    Item item(stoi(fieldValues[0]), fieldValues[1], stoi(fieldValues[2]), "21-11-2021");
+    Item item(stoi(fieldValues[0]), fieldValues[1], stoi(fieldValues[2]), fieldValues[3]);
     *itemP = item;
     return 0;
 }
