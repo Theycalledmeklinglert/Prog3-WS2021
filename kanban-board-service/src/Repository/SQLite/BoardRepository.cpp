@@ -202,7 +202,7 @@ std::optional<Item> BoardRepository::postItem(int columnId, std::string title, i
 
 std::optional<Prog3::Core::Model::Item> BoardRepository::putItem(int columnId, int itemId, std::string title, int position) {
     string sqlUpdateItemRequest = "UPDATE item SET title = '" + title + "', position = '" + to_string(position) + "' WHERE column_id = '" + to_string(columnId) + "' AND id = '" + to_string(itemId) + "'";
-    string sqlGetItem = "SELECT * FROM item WHERE column_id = '" + to_string(columnId) + "' AND id = '" + to_string(itemId) + "'";
+    string sqlGetItem = "SELECT * WHERE id = '" + to_string(itemId) + "'";
     int result = 0;
     char *errorMessage = nullptr;
 
@@ -212,7 +212,7 @@ std::optional<Prog3::Core::Model::Item> BoardRepository::putItem(int columnId, i
     if (sqlite3_changes(database) == 1) {
         if (SQLITE_OK == result) {
             // Get updated Item
-            Item out(-1, "test", -1, "test");
+            Item out(-1, "", -1, "");
             result = sqlite3_exec(database, sqlGetItem.c_str(), queryCallbackSingleItem, &out, &errorMessage);
             if (SQLITE_OK == result) {
                 return out;
