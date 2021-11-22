@@ -280,13 +280,13 @@ int BoardRepository::queryCallbackColumn(void *data, int numberOfColumns, char *
 
 int BoardRepository::queryCallbackItems(void *data, int numberOfColumns, char **fieldValues, char **columnNames) {
     vector<Item> *itemList = static_cast<std::vector<Item> *>(data);
-    Item temp(stoi(fieldValues[0]), fieldValues[1], stoi(fieldValues[2]), fieldValues[3]);
+    Item temp(stoi(fieldValues[0]), fieldValues[1], stoi(fieldValues[3]), "TimestampPlaceholder");
     (*itemList).push_back(temp);
     return 0;
 }
 int BoardRepository::queryCallbackSingleItem(void *data, int numberOfColumns, char **fieldValues, char **columnNames) {
     Item *itemP = static_cast<Item *>(data);
-    Item item(stoi(fieldValues[0]), fieldValues[1], stoi(fieldValues[3]), "22-11-2021");
+    Item item(stoi(fieldValues[0]), fieldValues[1], stoi(fieldValues[3]), "TimestampPlaceholder");
     *itemP = item;
     return 0;
 }
