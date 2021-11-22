@@ -212,7 +212,7 @@ std::optional<Prog3::Core::Model::Item> BoardRepository::putItem(int columnId, i
     if (sqlite3_changes(database) == 1) {
         if (SQLITE_OK == result) {
             // Get updated Item
-            Item out(-1, "", 2021, "");
+            Item out(-1, "test", -1, "test");
             result = sqlite3_exec(database, sqlGetItem.c_str(), queryCallbackSingleItem, &out, &errorMessage);
             if (SQLITE_OK == result) {
                 return out;
