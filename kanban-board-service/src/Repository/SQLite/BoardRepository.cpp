@@ -158,7 +158,9 @@ std::vector<Item> BoardRepository::getItems(int columnId) {
     vector<Item> itemVec;
     result = sqlite3_exec(database, sqlGetColumn.c_str(), queryCallbackItems, &itemVec, &errorMessage);
     if (SQLITE_OK == result) {
-        return itemVec;
+        if (sqlite3_changes(database) > 0) {
+            return itemVec;
+        }
     }
     vector<Item> failVec;
     return failVec;
