@@ -202,7 +202,7 @@ std::optional<Item> BoardRepository::postItem(int columnId, std::string title, i
 
 std::optional<Prog3::Core::Model::Item> BoardRepository::putItem(int columnId, int itemId, std::string title, int position) {
     string sqlUpdateItemRequest = "UPDATE item SET title = '" + title + "', position = '" + to_string(position) + "' WHERE column_id = '" + to_string(columnId) + "' AND id = '" + to_string(itemId) + "'";
-    string sqlGetItem = "SELECT * WHERE id = '" + to_string(itemId) + "'";
+    string sqlGetItem = "SELECT * WHERE id = '" + to_string(itemId) + "' AND column_id = '" + to_string(columnId) + "'";
     int result = 0;
     char *errorMessage = nullptr;
 
