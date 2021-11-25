@@ -191,7 +191,7 @@ std::optional<Item> BoardRepository::getItem(int columnId, int itemId) {
     Item test(-1, "", -1, "");
     result = sqlite3_exec(database, sqlGetItem.c_str(), queryCallbackSingleItem, &test, &errorMessage);
     if (SQLITE_OK == result) {
-        if (test.getId() != -1)
+        if (test.getId() != -1 && test.getId() != NULL)
             return test;
     }
     return std::nullopt;
