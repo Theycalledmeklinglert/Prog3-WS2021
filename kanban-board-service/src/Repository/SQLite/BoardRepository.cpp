@@ -119,7 +119,7 @@ std::optional<Column> BoardRepository::postColumn(std::string name, int position
 }
 
 std::optional<Prog3::Core::Model::Column> BoardRepository::putColumn(int id, std::string name, int position) {
-    string sqlUpdateColumnRequest = "UPDATE column SET name = '" + name + "', position = '" + to_string(position) + "' WHERE id = '" + to_string(id) + "'";
+    string sqlUpdateColumnRequest = "UPDATE column SET name = '" + name + "', position = '" + to_string(position) + "' WHERE id = '" + to_string(id) + "'"; // Beachte die "'" bei UPDATE SQL Requests
     string sqlSelectItems = "SELECT * FROM item WHERE column_id = '" + to_string(id) + "'";
     int result = 0;
     char *errorMessage = nullptr;
@@ -170,8 +170,9 @@ std::optional<Item> BoardRepository::getItem(int columnId, int itemId) {
     int result = 0;
     Item test(-1, "", -1, "");
     result = sqlite3_exec(database, sqlGetItem.c_str(), queryCallbackSingleItem, &test, &errorMessage);
-    if (SQLITE_OK == result && test.getId() != -1) {
-        return test;
+    if (SQLITE_OK == result) {
+        if (test.getId() != -1)
+            return test;
     }
     return std::nullopt;
 }
