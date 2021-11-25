@@ -65,7 +65,27 @@ void BoardRepository::initialize() {
 }
 
 Board BoardRepository::getBoard() {
-    throw NotImplementedException();
+    int result = 0;
+    char *errorMessage;
+    string sqlGetAllCol = "SELECT * FROM column";
+    vector<Column> colVec;
+    result = sqlite3_exec(database, sqlGetAllCol.c_str(), queryCallbackAllColumns, &colVec, &errorMessage);
+    handleSQLError(result, errorMessage);
+    if (SQLITE_OK == result) {
+        for (Column c : colVec) {
+            string sqlgetAllItemsOfEachCol = "SELECT * FROM item WHERE column_id = " + to_string(c.getId());
+            vector<Item> itemVec;
+            result = sqlite3_exec(database, sqlgetAllItemsOfEachCol.c_str(), queryCallbackItems, &itemVec, &errorMessage);
+            handleSQLError(result, errorMessage);
+            if (SQLITE_OK == result) {
+                for (Item i : itemVec)
+                    c.addItem(i);
+            }
+        }
+    }
+    Board board("Kanban Board");
+    board.setColumns(colVec);
+    return board;
 }
 
 std::vector<Column> BoardRepository::getColumns() { // erst naeste Woche
