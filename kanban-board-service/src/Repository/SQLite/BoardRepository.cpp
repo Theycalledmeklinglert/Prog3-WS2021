@@ -235,7 +235,8 @@ std::optional<Prog3::Core::Model::Item> BoardRepository::putItem(int columnId, i
         Item out(-1, "", -1, "");
         result = sqlite3_exec(database, sqlGetItem.c_str(), queryCallbackSingleItem, &out, &errorMessage);
         if (SQLITE_OK == result) {
-            return out;
+            if (out.getId() != -1)
+                return out;
         }
     }
     return std::nullopt;
