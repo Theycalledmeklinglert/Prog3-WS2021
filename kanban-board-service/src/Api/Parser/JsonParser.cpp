@@ -13,8 +13,8 @@ using namespace std;
 
 string JsonParser::convertToApiString(Board &board) {
     Document document(kObjectType);
-
-    Value jsonBoard = getJsonValueFromModel(board, document.GetAllocator());
+    throw new NotImplementedException();
+    //  Value jsonBoard = getJsonValueFromModel(board, document.GetAllocator());
 }
 
 string JsonParser::convertToApiString(Column &column) {
