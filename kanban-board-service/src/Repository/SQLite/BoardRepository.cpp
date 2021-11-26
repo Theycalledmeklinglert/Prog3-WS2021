@@ -65,37 +65,27 @@ void BoardRepository::initialize() {
 }
 
 Board BoardRepository::getBoard() {
-    int result = 0;
-    char *errorMessage;
-    string sqlGetAllCol = "SELECT * FROM column";
-    vector<Column> colVec;
-    result = sqlite3_exec(database, sqlGetAllCol.c_str(), queryCallbackAllColumns, &colVec, &errorMessage);
-    handleSQLError(result, errorMessage);
-    if (SQLITE_OK == result) {
-        for (Column c : colVec) {
-            string sqlgetAllItemsOfEachCol = "SELECT * FROM item WHERE column_id = " + to_string(c.getId());
-            vector<Item> itemVec;
-            result = sqlite3_exec(database, sqlgetAllItemsOfEachCol.c_str(), queryCallbackItems, &itemVec, &errorMessage);
-            handleSQLError(result, errorMessage);
-            if (SQLITE_OK == result) {
-                for (Item i : itemVec)
-                    c.addItem(i);
-            }
-        }
-    }
-    Board board("Kanban Board");
-    board.setColumns(colVec);
+    Board board(boardTitle);
+    board.setColumns(getColumns());
     return board;
 }
 
 std::vector<Column> BoardRepository::getColumns() { // erst naeste Woche
-                                                    /* string sqlGetAllCol = "SELECT * FROM column ORDER BY id ASC";
+    string sqlGetAllCol = "SELECT * FROM column";
     int result = 0;
     char *errorMessage = nullptr;
-    vector<Column> colVec;
-    void *colVecP = static_cast<void *>(&colVec);
-    result = sqlite3_exec(database, sqlGetAllCol.c_str(), BoardRepository::queryCallbackAllColumns, colVecP, &errorMessage); */
-    throw NotImplementedException();
+    vector<Column> cols;
+    result = sqlite3_exec(database, sqlGetAllCol.c_str(), queryCallbackAllColumns, &cols, &errorMessage);
+    handleSQLError(result, errorMessage);
+    if (SQLITE_OK != result) {
+        vector<Column> emptyVec;
+        return emptyVec;
+    }
+    if (!cols.empty()) {
+        return cols;
+    }
+    vector<Column> emptyVec;
+    return emptyVec;
 }
 
 std::optional<Column> BoardRepository::getColumn(int id) {
@@ -105,9 +95,11 @@ std::optional<Column> BoardRepository::getColumn(int id) {
     char *errorMessage = nullptr;
     Column test(-1, "", -1);
     result = sqlite3_exec(database, sqlGetCol.c_str(), queryCallbackColumn, &test, &errorMessage);
+    handleSQLError(result, errorMessage);
     if (SQLITE_OK == result && (test.getId() != -1)) {
         vector<Item> itemVec;
         result = sqlite3_exec(database, sqlGetColItems.c_str(), queryCallbackItems, &itemVec, &errorMessage);
+        handleSQLError(result, errorMessage);
         if (SQLITE_OK == result) {
             for (Item i : itemVec) {
                 test.addItem(i);
@@ -177,8 +169,11 @@ std::vector<Item> BoardRepository::getItems(int columnId) {
     char *errorMessage = nullptr;
     vector<Item> itemVec;
     result = sqlite3_exec(database, sqlGetColumn.c_str(), queryCallbackItems, &itemVec, &errorMessage);
+    handleSQLError(result, errorMessage);
     if (SQLITE_OK == result) {
-        return itemVec;
+        if (!itemVec.empty()) {
+            return itemVec;
+        }
     }
     vector<Item> failVec;
     return failVec;
@@ -190,6 +185,7 @@ std::optional<Item> BoardRepository::getItem(int columnId, int itemId) {
     int result = 0;
     Item test(-1, "", -1, "");
     result = sqlite3_exec(database, sqlGetItem.c_str(), queryCallbackSingleItem, &test, &errorMessage);
+    handleSQLError(result, errorMessage);
     if (SQLITE_OK == result) {
         if (test.getId() != -1 && test.getId() != NULL)
             return test;
@@ -234,6 +230,7 @@ std::optional<Prog3::Core::Model::Item> BoardRepository::putItem(int columnId, i
         // Get updated Item
         Item out(-1, "", -1, "");
         result = sqlite3_exec(database, sqlGetItem.c_str(), queryCallbackSingleItem, &out, &errorMessage);
+        handleSQLError(result, errorMessage);
         if (SQLITE_OK == result) {
             if (out.getId() != -1)
                 return out;
