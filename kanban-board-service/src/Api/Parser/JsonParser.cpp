@@ -12,7 +12,9 @@ using namespace rapidjson;
 using namespace std;
 
 string JsonParser::convertToApiString(Board &board) {
-    throw NotImplementedException();
+    Document document(kObjectType);
+
+    Value jsonBoard = getJsonValueFromModel(board, document.GetAllocator());
 }
 
 string JsonParser::convertToApiString(Column &column) {
@@ -60,7 +62,7 @@ string JsonParser::jsonValueToString(rapidjson::Value const &json) {
     return buffer.GetString();
 }
 
-string JsonParser::convertToApiString(std::vector<Column> &columns) { 
+string JsonParser::convertToApiString(std::vector<Column> &columns) {
     throw NotImplementedException();
 }
 
@@ -74,7 +76,7 @@ string JsonParser::convertToApiString(Item &item) {
 }
 
 string JsonParser::convertToApiString(std::vector<Item> &items) {
-   throw NotImplementedException();
+    throw NotImplementedException();
 }
 
 std::optional<Column> JsonParser::convertColumnToModel(int columnId, std::string &request) {
