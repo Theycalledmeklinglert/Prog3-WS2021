@@ -80,6 +80,12 @@ std::vector<Column> BoardRepository::getColumns() { // erst naeste Woche
     handleSQLError(result, errorMessage);
     if (SQLITE_OK == result) {
         if (!cols.empty()) {
+            vector<Item> itemVec;
+            for (Column c : cols) {
+                itemVec = getItems(c.getId());
+                for (Item i : itemVec)
+                    c.addItem(i);
+            }
             return cols;
         }
     }
