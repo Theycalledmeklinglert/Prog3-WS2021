@@ -78,12 +78,10 @@ std::vector<Column> BoardRepository::getColumns() { // erst naeste Woche
     vector<Column> cols;
     result = sqlite3_exec(database, sqlGetAllCol.c_str(), queryCallbackAllColumns, &cols, &errorMessage);
     handleSQLError(result, errorMessage);
-    if (SQLITE_OK != result) {
-        vector<Column> emptyVec;
-        return emptyVec;
-    }
-    if (!cols.empty()) {
-        return cols;
+    if (SQLITE_OK == result) {
+        if (!cols.empty()) {
+            return cols;
+        }
     }
     vector<Column> emptyVec;
     return emptyVec;
