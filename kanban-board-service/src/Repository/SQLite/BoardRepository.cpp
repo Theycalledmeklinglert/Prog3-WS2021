@@ -72,7 +72,7 @@ Board BoardRepository::getBoard() {
 }
 
 std::vector<Column> BoardRepository::getColumns() { // erst naeste Woche
-    string sqlGetAllCol = "SELECT * FROM column";
+    string sqlGetAllCol = "SELECT id, name, position FROM column";
     int result = 0;
     char *errorMessage = nullptr;
     vector<Column> cols;
