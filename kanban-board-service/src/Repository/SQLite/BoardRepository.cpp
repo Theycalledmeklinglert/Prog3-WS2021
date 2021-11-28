@@ -66,7 +66,8 @@ void BoardRepository::initialize() {
 
 Board BoardRepository::getBoard() {
     Board board(boardTitle);
-    board.setColumns(getColumns());
+    vector<Column> colVec = getColumns();
+    board.setColumns(colVec);
     return board;
 }
 
