@@ -3,10 +3,11 @@
 ## Prerequisites
 
 - Visual Studio Code
-- NPM (NodeJs) <https://nodejs.org/en/>
+- NPM (NodeJs) <https://nodnoejs.org/en/>
 
 ## Build the Angluar application
 
+- Zuerst per Terminal in kanbard-board-app navigieren
 - Run `npm install` to install dependencies
 - Run `npm run build` to build frontend
 

@@ -1,0 +1,8 @@
+<!-- Die hier definierten Klassen muessen im .scss File definiert werden (also wie sie aussehen sollen)-->
+<div class="container">
+  <div class="itemContainer">
+    <div *ngFor="let item of items">
+      <item [id]="item.id" [title]="item.title"> </item>
+    </div>
+  </div>
+</div>

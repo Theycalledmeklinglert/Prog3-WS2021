@@ -1,0 +1,14 @@
+<div class="container">
+  <div class="title">{{ title }}</div>
+  <div class="columnContainer">
+    <div *ngFor="let column of columns">
+      <column
+        [id]="column.id"
+        [title]="column.title"
+        [position]="column.position"
+        [items]="column.items"
+      >
+      </column>
+    </div>
+  </div>
+</div>
